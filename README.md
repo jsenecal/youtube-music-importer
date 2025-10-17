@@ -29,6 +29,34 @@ cd yt-music-importer
 pip install ytmusicapi
 ```
 
+## Docker Installation (Alternative)
+
+If you prefer to use Docker instead of installing Python dependencies locally:
+
+1. Clone the repository and change directory (same as above)
+
+2. Build the Docker image:
+```bash
+docker build -t youtube-music-importer .
+```
+
+3. Run the container with your CSV files and oauth.json mounted as volumes:
+```bash
+docker run \
+  -v /path/to/oauth.json:/data/oauth.json \
+  -v /path/to/csv-directory:/data/csvs \
+  youtube-music-importer \
+  --oauth /data/oauth.json \
+  --csv-dir /data/csvs
+```
+
+Replace `/path/to/oauth.json` and `/path/to/csv-directory` with your actual paths.
+
+Alternatively, if your oauth.json and CSV files are in the current directory, you can use:
+```bash
+docker run -v $(pwd):/data youtube-music-importer --oauth /data/oauth.json --csv-dir /data
+```
+
 ## Usage
 
 1. Prepare your CSV files. Each CSV file should represent one playlist. The script will use the exact filename of the CSV to become (or update) the playlist.  I used [Exportify](https://exportify.net/) to export my Spotify playlists to CSV.
@@ -40,6 +68,11 @@ pip install ytmusicapi
 3. Run the script:
 ```bash
 python add.py
+```
+
+   You can optionally specify custom paths:
+```bash
+python add.py --oauth /path/to/oauth.json --csv-dir /path/to/csvs
 ```
 
 4. The script will iterate over each CSV file, creating or updating the corresponding playlist on YouTube Music with the  tracks specified in the CSV.

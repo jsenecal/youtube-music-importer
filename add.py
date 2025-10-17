@@ -2,15 +2,20 @@ from ytmusicapi import YTMusic
 import csv
 import os
 import time
+import argparse
 
 MAX_RETRIES = 4 # times
 DELAY = 10  # seconds
 TRACK_COL = 'Track Name'  # Modify this to the header name for tracks in your CSV
 ARTIST_COL = 'Artist Name(s)'  # Modify this to the header name for artists in your CSV
 
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description='Import playlists to YouTube Music from CSV files')
+parser.add_argument('--oauth', '-o', default='oauth.json', help='Path to oauth.json file (default: oauth.json)')
+parser.add_argument('--csv-dir', '-d', default='.', help='Directory containing CSV files (default: current directory)')
+args = parser.parse_args()
 
-
-yt = YTMusic('oauth.json')
+yt = YTMusic(args.oauth)
 
 # Fetch existing playlists once
 existing_playlists = {playlist['title']: playlist['playlistId'] for playlist in yt.get_library_playlists()}
@@ -25,14 +30,14 @@ def get_or_create_playlist(name):
     existing_playlists[name] = playlist_id
     return playlist_id
 
-csv_files = [file for file in os.listdir() if file.endswith('.csv')]
+csv_files = [file for file in os.listdir(args.csv_dir) if file.endswith('.csv')]
 
 try:
     for csv_file in csv_files:
         playlist_name = os.path.splitext(csv_file)[0] 
         playlistId = get_or_create_playlist(playlist_name)
         
-        with open(csv_file, mode='r', encoding='utf-8-sig') as file:
+        with open(os.path.join(args.csv_dir, csv_file), mode='r', encoding='utf-8-sig') as file:
             reader = csv.DictReader(file)
             for row in reader:
                 time.sleep(1)

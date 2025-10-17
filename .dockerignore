@@ -1,0 +1,23 @@
+# Git files
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+*.egg-info
+
+# Sensitive files (should be mounted as volumes)
+oauth.json
+*.csv
+
+# Documentation
+README.md
+CLAUDE.md
+
+# Test files
+test.csv
