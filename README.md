@@ -10,7 +10,42 @@ This tool was made for taking exported CSVs from Spotify and being able to inges
 ## Prerequisites
 
 - Python 3.x
-- A `oauth.json` file containing credentials for the YouTube Music API. To generate this file, follow the authentication steps provided in the [ytmusicapi documentation](https://ytmusicapi.readthedocs.io/en/stable/usage.html).
+- YouTube Data API credentials (Client ID and Client Secret)
+- An `oauth.json` file (generated through OAuth setup - see below)
+
+## Setting up OAuth
+
+Before you can use the importer, you need to set up OAuth authentication with the YouTube Music API.
+
+### Step 1: Get API Credentials
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project (or select an existing one)
+3. Enable the YouTube Data API v3
+4. Go to "Credentials" → "Create Credentials" → "OAuth client ID"
+5. Select "TVs and Limited Input devices" as the application type
+6. Save your **Client ID** and **Client Secret**
+
+### Step 2: Generate oauth.json
+
+Run the OAuth setup command:
+
+```bash
+python add.py --setup-oauth
+```
+
+You'll be prompted to:
+1. Enter your Client ID
+2. Enter your Client Secret
+3. Visit a URL to authorize the application
+4. Enter the authorization code
+
+This will create an `oauth.json` file that the importer will use for authentication.
+
+**Tip:** You can also provide credentials as arguments:
+```bash
+python add.py --setup-oauth --client-id YOUR_CLIENT_ID --client-secret YOUR_CLIENT_SECRET
+```
 
 ## Installation
 
@@ -32,6 +67,16 @@ pip install ytmusicapi
 ## Docker Installation (Alternative)
 
 If you prefer to use Docker instead of installing Python dependencies locally, you have two options:
+
+### OAuth Setup with Docker
+
+Before running the importer, you need to generate `oauth.json`. Run the OAuth setup interactively:
+
+```bash
+docker run -it -v $(pwd):/data ghcr.io/jsenecal/youtube-music-importer:latest --setup-oauth --oauth /data/oauth.json
+```
+
+This will prompt you for your Client ID and Secret, then guide you through the OAuth flow. The `oauth.json` will be saved in your current directory.
 
 ### Option 1: Use Pre-built Image (Recommended)
 

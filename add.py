@@ -1,4 +1,5 @@
 from ytmusicapi import YTMusic
+from ytmusicapi.setup import setup_oauth
 import csv
 import os
 import time
@@ -13,7 +14,42 @@ ARTIST_COL = 'Artist Name(s)'  # Modify this to the header name for artists in y
 parser = argparse.ArgumentParser(description='Import playlists to YouTube Music from CSV files')
 parser.add_argument('--oauth', '-o', default='oauth.json', help='Path to oauth.json file (default: oauth.json)')
 parser.add_argument('--csv-dir', '-d', default='.', help='Directory containing CSV files (default: current directory)')
+parser.add_argument('--setup-oauth', action='store_true', help='Run OAuth setup to create oauth.json file')
+parser.add_argument('--client-id', help='YouTube Data API Client ID (optional, will prompt if not provided)')
+parser.add_argument('--client-secret', help='YouTube Data API Client Secret (optional, will prompt if not provided)')
 args = parser.parse_args()
+
+# If setup-oauth flag is set, run OAuth setup and exit
+if args.setup_oauth:
+    print("Starting OAuth setup...")
+    print("")
+
+    client_id = args.client_id
+    client_secret = args.client_secret
+
+    # Prompt for credentials if not provided
+    if not client_id:
+        client_id = input("Enter your Client ID: ").strip()
+    if not client_secret:
+        client_secret = input("Enter your Client Secret: ").strip()
+
+    if not client_id or not client_secret:
+        print("Error: Client ID and Client Secret are required")
+        exit(1)
+
+    print("\nYou will be prompted to visit a URL to authorize the application...")
+    setup_oauth(filepath=args.oauth, client_id=client_id, client_secret=client_secret)
+    print(f"\n✓ OAuth setup complete! {args.oauth} has been created.")
+    print("You can now run the importer without the --setup-oauth flag.")
+    exit(0)
+
+# Check if oauth.json exists
+if not os.path.exists(args.oauth):
+    print(f"Error: {args.oauth} not found.")
+    print(f"\nTo set up OAuth, run:")
+    print(f"  python add.py --setup-oauth")
+    print(f"\nYou'll need your Client ID and Secret from: https://console.cloud.google.com/")
+    exit(1)
 
 yt = YTMusic(args.oauth)
 
