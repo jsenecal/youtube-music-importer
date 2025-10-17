@@ -37,7 +37,7 @@ You'll be prompted to enter your Client ID and Secret, then visit a URL to autho
 
 Prepare your CSV files with your playlists. Each CSV file will become one playlist (named after the filename).
 
-**Note:** You may need to modify the `TRACK_COL` and `ARTIST_COL` variables in the script to match your CSV headers. For Spotify exports via [Exportify](https://exportify.net/), the defaults work out of the box.
+**Default CSV columns:** The importer expects columns named `Track Name` and `Artist Name(s)` by default (matching Spotify's [Exportify](https://exportify.net/) format). If your CSV uses different column names, see the customization section below.
 
 ### Step 4: Run the Importer
 
@@ -124,10 +124,35 @@ docker build -t youtube-music-importer .
 
 ### Customizing CSV Column Headers
 
-If your CSV files use different column headers than the defaults (`Track Name` and `Artist Name(s)`), you'll need to modify the script:
+If your CSV files use different column headers than the defaults (`Track Name` and `Artist Name(s)`), you can specify custom column names using command-line arguments or environment variables.
 
-Edit `add.py` and update these variables at the top:
-```python
-TRACK_COL = 'Your Track Column Name'
-ARTIST_COL = 'Your Artist Column Name'
+**Using command-line arguments:**
+```bash
+docker run -v $(pwd):/data ghcr.io/jsenecal/youtube-music-importer:latest \
+  --oauth /data/oauth.json \
+  --csv-dir /data \
+  --track-col "Song Title" \
+  --artist-col "Artist"
+```
+
+**Using environment variables (Docker):**
+```bash
+docker run -v $(pwd):/data \
+  -e TRACK_COL="Song Title" \
+  -e ARTIST_COL="Artist" \
+  ghcr.io/jsenecal/youtube-music-importer:latest \
+  --oauth /data/oauth.json \
+  --csv-dir /data
+```
+
+**Using environment variables (Python):**
+```bash
+export TRACK_COL="Song Title"
+export ARTIST_COL="Artist"
+python add.py
+```
+
+Or inline:
+```bash
+TRACK_COL="Song Title" ARTIST_COL="Artist" python add.py
 ```

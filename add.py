@@ -7,17 +7,21 @@ import argparse
 
 MAX_RETRIES = 4 # times
 DELAY = 10  # seconds
-TRACK_COL = 'Track Name'  # Modify this to the header name for tracks in your CSV
-ARTIST_COL = 'Artist Name(s)'  # Modify this to the header name for artists in your CSV
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Import playlists to YouTube Music from CSV files')
 parser.add_argument('--oauth', '-o', default='oauth.json', help='Path to oauth.json file (default: oauth.json)')
 parser.add_argument('--csv-dir', '-d', default='.', help='Directory containing CSV files (default: current directory)')
+parser.add_argument('--track-col', default=os.getenv('TRACK_COL', 'Track Name'), help='CSV column name for track names (default: Track Name, env: TRACK_COL)')
+parser.add_argument('--artist-col', default=os.getenv('ARTIST_COL', 'Artist Name(s)'), help='CSV column name for artist names (default: Artist Name(s), env: ARTIST_COL)')
 parser.add_argument('--setup-oauth', action='store_true', help='Run OAuth setup to create oauth.json file')
 parser.add_argument('--client-id', help='YouTube Data API Client ID (optional, will prompt if not provided)')
 parser.add_argument('--client-secret', help='YouTube Data API Client Secret (optional, will prompt if not provided)')
 args = parser.parse_args()
+
+# Set column names from arguments (which may have come from env vars or defaults)
+TRACK_COL = args.track_col
+ARTIST_COL = args.artist_col
 
 # If setup-oauth flag is set, run OAuth setup and exit
 if args.setup_oauth:
