@@ -31,21 +31,18 @@ pip install ytmusicapi
 
 ## Docker Installation (Alternative)
 
-If you prefer to use Docker instead of installing Python dependencies locally:
+If you prefer to use Docker instead of installing Python dependencies locally, you have two options:
 
-1. Clone the repository and change directory (same as above)
+### Option 1: Use Pre-built Image (Recommended)
 
-2. Build the Docker image:
-```bash
-docker build -t youtube-music-importer .
-```
+A pre-built Docker image is automatically published to GitHub Container Registry on every push to main.
 
-3. Run the container with your CSV files and oauth.json mounted as volumes:
+Run the container with your CSV files and oauth.json mounted as volumes:
 ```bash
 docker run \
   -v /path/to/oauth.json:/data/oauth.json \
   -v /path/to/csv-directory:/data/csvs \
-  youtube-music-importer \
+  ghcr.io/jsenecal/youtube-music-importer:latest \
   --oauth /data/oauth.json \
   --csv-dir /data/csvs
 ```
@@ -54,7 +51,30 @@ Replace `/path/to/oauth.json` and `/path/to/csv-directory` with your actual path
 
 Alternatively, if your oauth.json and CSV files are in the current directory, you can use:
 ```bash
-docker run -v $(pwd):/data youtube-music-importer --oauth /data/oauth.json --csv-dir /data
+docker run -v $(pwd):/data ghcr.io/jsenecal/youtube-music-importer:latest --oauth /data/oauth.json --csv-dir /data
+```
+
+### Option 2: Build Locally
+
+1. Clone the repository and change directory:
+```bash
+git clone https://github.com/jsenecal/youtube-music-importer.git
+cd youtube-music-importer
+```
+
+2. Build the Docker image:
+```bash
+docker build -t youtube-music-importer .
+```
+
+3. Run the container (use `youtube-music-importer` instead of the ghcr.io image):
+```bash
+docker run \
+  -v /path/to/oauth.json:/data/oauth.json \
+  -v /path/to/csv-directory:/data/csvs \
+  youtube-music-importer \
+  --oauth /data/oauth.json \
+  --csv-dir /data/csvs
 ```
 
 ## Usage
